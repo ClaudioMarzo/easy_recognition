@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Reconhecimento Facial</title>
+    <style>
+        /* Adicione estilos para uma interface bonita */
+    </style>
+</head>
+<body>
+    <h1>Bem-vindo ao Reconhecimento Facial</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="snap">Capturar Foto</button>
+    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+    <p id="message"></p>
+
+    <script>
+        const API_URL = "<%= process.env.API_URL %>"
+        // Acessar a câmera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+            })
+            .catch(function(err) {
+                console.error("Erro ao acessar a câmera: " + err);
+            });
+
+        // Capturar a imagem e enviar ao backend
+        document.getElementById('snap').addEventListener('click', function() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, 640, 480);
+
+            canvas.toBlob(function(blob) {
+                const formData = new FormData();
+                formData.append('image', blob, 'snapshot.png');
+
+                fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.name) {
+                        document.getElementById('message').innerText = 'Olá, ' + data.name + '!';
+                    } else {
+                        document.getElementById('message').innerText = data.error;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+            }, 'image/png');
+        });
+    </script>
+</body>
+</html>
