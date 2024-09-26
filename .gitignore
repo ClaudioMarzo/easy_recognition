@@ -1,0 +1,27 @@
+# Python
+*.pyc
+__pycache__/
+
+# Virtual Environments
+env/
+venv/
+.facial_recognition_env/
+
+# Django
+*.sqlite3
+
+# Pyenv
+.python-version
+
+#############################################################################
+#############################################################################
+
+# Node.js
+node_modules/
+
+# Logs
+logs
+*.log
+
+# dotenv environment variables file
+.env
